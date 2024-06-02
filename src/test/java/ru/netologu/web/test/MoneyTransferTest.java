@@ -63,5 +63,21 @@ public class MoneyTransferTest {
         Assertions.assertEquals(expectedDBalanceFirstCard, actualBalanceFirstCard);
         Assertions.assertEquals(expectedDBalanceSecondCard, actualBalanceSecondCard);
     }
+    @Test
+    @DisplayName("Перевод средств больше баланса")
+    void shouldNotTransferMoneyOverBalance() {
+        var firstCardInfo = getFirstCardInfo();
+        var secondCardInfo = getSecondCardInfo();
+        var firstCardBalance = dashboardPage.getCardBalance(firstCardInfo);
+        var secondCardBalance = dashboardPage.getCardBalance(secondCardInfo);
+        var amount = generateInvalidAmount(secondCardBalance);
+        var transferPage = dashboardPage.selectCardToTransfer(firstCardInfo);
+        transferPage.Transfer(String.valueOf(amount), secondCardInfo);
+        transferPage.Error("Сумма перевода превышает остаток на карте");
+        var actualBalanceFirstCard = dashboardPage.getCardBalance(firstCardInfo);
+        var actualBalanceSecondCard = dashboardPage.getCardBalance(secondCardInfo);
+        Assertions.assertEquals(firstCardBalance, actualBalanceFirstCard);
+        Assertions.assertEquals(secondCardBalance, actualBalanceSecondCard);
+    }
 
 }
